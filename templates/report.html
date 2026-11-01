@@ -1,0 +1,18 @@
+{% extends "base.html" %}{% block body %}
+<div style="display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:12px">
+<div><h1>Audit report</h1><p class="mute">{{filename}}</p></div>
+<div style="display:flex;gap:10px"><a class="btn ghost" href="/upload">New audit</a>{% if dl %}<a class="btn" href="{{dl}}" download="{{dl_name}}">Export to Excel</a>{% else %}<a class="btn" href="/export/{{rid}}">Export to Excel</a>{% endif %}</div></div>
+<div class="grid" style="margin-top:20px">{% for k,v in summary.items() %}
+<div class="stat"><span class="mute">{{k}}</span><b>{{ "{:,}".format(v) }}</b></div>{% endfor %}</div>
+<div class="card"><h3 style="margin-top:0">Issues found</h3>
+{% for k,v in counts.items() %}<span class="tag">{{k}}: {{v}}</span>{% else %}<span class="mute">No issues — looks clean ✅</span>{% endfor %}</div>
+{% if flagged %}<div class="card"><h3 style="margin-top:0">Flagged rows</h3><div class="scroll"><table>
+<tr>{% for c in cols %}<th>{{c}}</th>{% endfor %}</tr>
+{% for r in flagged %}<tr>{% for c in cols %}<td>{% if c=='Issues' %}{% for t in r[c].split(', ') %}<span class="tag">{{t}}</span>{% endfor %}{% else %}{{r[c]}}{% endif %}</td>{% endfor %}</tr>{% endfor %}
+</table></div></div>{% endif %}
+<div class="card"><h3 style="margin-top:0">Benford's Law (first digit)</h3><table>
+<tr><th>Digit</th><th>Expected</th><th>Actual</th><th style="width:40%"></th><th>Deviation</th></tr>
+{% for b in benford %}<tr><td>{{b['Digit']}}</td><td>{{b['Expected %']}}%</td><td>{{b['Actual %']}}%</td>
+<td><div class="bar" style="width:{{ [b['Actual %']*2,100]|min }}%"></div></td><td>{{b['Deviation']}}</td></tr>{% endfor %}</table>
+<p class="mute">Big deviations can hint at manipulated or made-up numbers (most reliable with 100+ rows).</p></div>
+{% endblock %}

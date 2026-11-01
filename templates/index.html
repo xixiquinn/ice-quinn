@@ -1,0 +1,16 @@
+{% extends "base.html" %}{% block body %}
+<p><a href="/">← Live ledger</a></p><h1>Finance Auditor</h1><p class="mute">Upload transactions, spot problems, export a report.</p>
+<form class="card" action="/audit" method="post" enctype="multipart/form-data">
+<label class="drop" id="drop"><input type="file" name="file" id="f" accept=".csv,.xlsx,.xls" hidden>
+<div style="font-size:42px">📊</div><b id="lbl">Drop a CSV or Excel file here, or click to browse</b>
+<p class="mute">Needs an Amount column. Date, Vendor, Invoice are optional.</p></label>
+<div style="margin-top:18px;display:flex;gap:10px"><button class="btn">Run audit</button>
+<a class="btn ghost" href="/sample">Download sample file</a></div></form>
+<div class="card mute">Checks: duplicates · duplicate invoice numbers · missing data · negative amounts · outliers · round numbers · weekend & future dates · Benford's Law</div>
+<script>
+const d=document.getElementById('drop'),f=document.getElementById('f'),l=document.getElementById('lbl');
+f.onchange=()=>l.textContent=f.files[0]?.name||l.textContent;
+['dragover','dragenter'].forEach(e=>d.addEventListener(e,x=>{x.preventDefault();d.classList.add('on')}));
+['dragleave','drop'].forEach(e=>d.addEventListener(e,x=>{x.preventDefault();d.classList.remove('on')}));
+d.addEventListener('drop',x=>{f.files=x.dataTransfer.files;f.onchange()});
+</script>{% endblock %}
